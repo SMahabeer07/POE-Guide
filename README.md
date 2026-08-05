@@ -10,3 +10,5 @@ We can stick to organizations for the ICE Task.
 Lets chat in class and come up with a good strategy we can apply across the board to make sure your first time in a group in a practical module goes smoothly and I will update this repo accordingly. Talking points include how to work with multiple branches, file structures, how to delegate etc.
 
 We will also discuss the readme, classes and more. Today we will also be containerizing our first app so stick around for that. 
+
+- POE guide will be completed as individuals not in groups.
