@@ -267,3 +267,97 @@ This is scored separately from the Docker section, so treat it as its own delive
 Minimum 5 commits **per student**, not per group — and generic messages like "fix" or "test" won't be scored in "Greatly exceeds the required standard". Aim for descriptive, feature-based commits (e.g. `feat: add get purchases by category endpoint`).
 
 Also keep in mind that we are using feature branches and merging into main at the end when our backend has been completed which makes 5 commits a person very easy regardless of group size.
+
+## Postman
+
+## Writing a Postman Collection
+
+A **collection** is just a saved, organized set of API requests — folders, requests, sample bodies, and (optionally) automated tests — that you can export as one JSON file and hand in. This section covers building one from scratch in the Postman UI, and explains what each part of the underlying JSON means so you're not just clicking blindly.
+
+### Step 1: Create the collection
+- Postman → **Collections** tab (left sidebar) → **+** → name it (e.g. `StudentPOE`).
+- Right-click it → **Add Folder** to group related requests. Use one folder per resource — `Students`, `Transcripts` — not one flat list of 15 requests. This maps directly to the rubric's "organized into folders" criterion.
+
+### Step 2: Set up an Environment (not just collection variables)
+Before writing requests, create an **Environment**: Environments tab → **+** → name it (e.g. `Local`) → add a variable:
+
+| Variable | Initial value |
+|---|---|
+| `baseUrl` | `http://localhost:7071/api` |
+
+Select that environment from the dropdown top-right of the Postman window so it's "active." Every request should reference `{{baseUrl}}` instead of typing `http://localhost:7071/api` out each time. The payoff: to test against a deployed URL later, you change **one value in one place**, not every request. This is exactly what "hardcoded URLs used" is penalized for in the rubric, and what "dynamic environment variables" is rewarded for.
+
+> Environment variables vs. collection variables: environments are meant to swap per context (Local vs Deployed); collection variables (set on the collection itself) are for values that don't change between environments, like a `studentNumber` you're reusing across several test requests in a row. Both are referenced the same way — `{{variableName}}` — Postman resolves environment first, then collection.
+
+### Step 3: Build a request
+For each endpoint:
+1. Right-click the folder → **Add Request**, name it clearly with the expected outcome, e.g. `Create Student (201)` — not just `Create Student`. This makes a test run's pass/fail list self-explanatory.
+2. Set the **method** (GET/POST/DELETE/etc.) and **URL**, using `{{baseUrl}}` — e.g. `{{baseUrl}}/students`.
+3. For POST/PUT bodies: **Body** tab → **raw** → dropdown set to **JSON** → type your sample JSON.
+4. For file uploads: **Body** tab → **binary** → this is the only mode that lets you attach an actual file from disk.
+
+### Step 4: Add automated tests
+Every request has a **Tests** tab (or **Scripts → Post-response** in newer Postman) — this is JavaScript that runs after the response comes back, using Postman's built-in `pm` object. Two lines cover most of what the rubric wants:
+
+```javascript
+pm.test("Status is 201 Created", function () {
+    pm.response.to.have.status(201);
+});
+
+pm.test("Response has expected field", function () {
+    const body = pm.response.json();
+    pm.expect(body).to.have.property("studentNumber");
+});
+```
+
+`pm.test(name, function)` registers one assertion — the string is what shows up in the results list. `pm.response.to.have.status(n)` checks the HTTP status code. `pm.response.json()` parses the response body so you can check its shape. Write **one request per outcome you want to prove** — a "happy path" request expecting `201`, and separate requests deliberately triggering `400`/`404`, each with its own test asserting *that* status code. That's how you demonstrate validation actually works, not just that the endpoint responds.
+
+### Step 5: Run the whole collection
+Collection → **"..."** → **Run collection** → tick your folders → **Run**. Postman fires every request in order and shows a pass/fail summary against every `pm.test()` you wrote. This is the "saved automated tests" a marker is looking for — it proves your endpoints were actually exercised, not just eyeballed once in the browser.
+
+### Step 6: Export
+Collection → **"..."** → **Export** → Collection v2.1 format. Also export your Environment (Environments tab → **"..."** next to it → Export). Submit both JSON files alongside your code.
+
+---
+
+### Anatomy of the exported JSON
+If you open the exported file, here's what each part means:
+
+```json
+{
+  "info": { "name": "...", "schema": "..." },
+  "variable": [ { "key": "baseUrl", "value": "...", "type": "string" } ],
+  "item": [
+    {
+      "name": "Students",
+      "item": [
+        {
+          "name": "Create Student (201)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{ ... }" },
+            "url": { "raw": "{{baseUrl}}/students", "host": ["{{baseUrl}}"], "path": ["students"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": { "exec": [ "pm.test(...)" ], "type": "text/javascript" }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+- **`info`** — metadata about the collection itself: its name and which Postman schema version it follows. Doesn't affect behaviour.
+- **`variable`** — collection-level variables (like `{{studentNumber}}`, `{{fileName}}`) available to every request in the collection, regardless of which environment is active.
+- **`item`** — the actual contents. This is recursive: an `item` can either be a **folder** (which itself has a nested `item` array — that's how `Students`/`Transcripts` work) or a **request** (which has a `request` object instead).
+- **`request.method` / `request.header` / `request.body`** — the HTTP verb, any headers (like `Content-Type`), and the body payload. `mode: "raw"` + JSON is for typed request bodies; `mode: "file"` is for binary uploads.
+- **`request.url`** — deliberately split into `raw` (the full string, for display) and `host`/`path`/`query` (the same URL broken into parts) — Postman keeps both in sync automatically as you edit either.
+- **`event`** — this is where test scripts live. `"listen": "test"` means "run this after the response arrives" (as opposed to `"listen": "prerequest"`, which runs *before* the request is sent — useful for generating a timestamp or token, though you likely won't need it here).
+- **`script.exec`** — the actual JavaScript, as an array of lines (that's just how Postman stores multi-line scripts in JSON).
+
+Understanding this structure means you can also **hand-edit** a collection JSON directly (e.g. duplicating a request block and changing a few fields) rather than doing everything through clicking in the UI — useful once you have several similar requests to create.
