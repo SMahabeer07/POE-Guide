@@ -542,3 +542,148 @@ private static async Task<HttpResponseData> NotFound(HttpRequestData req, string
 - **`UseDevelopmentStorage=true`** — the Azurite fallback string, ties directly to your README's localsettings justification.
 - **Streaming download** vs. buffered upload — good contrast to mention in the video.
 - **Duplicated helpers** — worth noting as a refactor opportunity if asked.
+
+## Handling Merge Conflicts
+
+A merge conflict happens when Git cannot automatically combine changes from two branches, usually because the same lines in a file were edited in both branches. Do not panic. Communicate with the person who made the other changes and decide which version is correct.
+
+### What a conflict looks like
+
+When you open a conflicted file, you will see markers like this:
+
+```text
+<<<<<<< HEAD
+// Your branch's version
+=======
+// Incoming branch's version
+>>>>>>> feature/other-branch
+```
+
+- `<<<<<<< HEAD` starts your current branch's changes.
+- `=======` separates the two versions.
+- `>>>>>>> branch-name` ends the incoming branch's changes.
+
+To resolve it, delete the markers and keep the correct code. You can keep yours, keep theirs, or combine both.
+
+---
+
+### Method 1: Resolve by changing the files manually
+
+This is the most common method and works well in Visual Studio 2026, VS Code, or any editor.
+
+1. Pull the latest changes from the target branch:
+   ```bash
+   git checkout your-branch
+   git pull origin main
+   ```
+
+2. Git will list the conflicted files. Open each one in Visual Studio 2026, VS Code, or another editor.
+
+3. Search for `<<<<<<<`.
+
+4. Decide what the final code should be:
+   - Keep only your changes.
+   - Keep only the incoming changes.
+   - Combine both if needed.
+
+5. Delete all conflict markers:
+   - `<<<<<<<`
+   - `=======`
+   - `>>>>>>>`
+
+6. Save the file.
+
+7. Test the app locally to make sure nothing broke.
+
+8. Stage and commit the resolved files:
+   ```bash
+   git add .
+   git commit -m "Resolve merge conflict in BudgetFunctions.cs"
+   git push
+   ```
+
+---
+
+### Method 2: Resolve directly on GitHub
+
+GitHub can resolve conflicts directly in the browser, but this normally works best for pull requests and simple conflicts.
+
+1. Open the pull request on GitHub.
+
+2. If there are conflicts, GitHub shows a **Resolve conflicts** button. Click it.
+
+3. GitHub opens a web editor showing the conflicted files with the same markers.
+
+4. Edit the file:
+   - Remove `<<<<<<<`, `=======`, and `>>>>>>>`.
+   - Keep the correct code.
+
+5. Click **Mark as resolved** for each file.
+
+6. Once all conflicts are resolved, click **Commit merge**.
+
+7. Finish merging the pull request.
+
+8. If the conflict is large or complicated, resolve it locally instead.
+
+> Note: You cannot easily run the project locally before committing when resolving on GitHub, so be careful and double-check the code.
+
+---
+
+### Method 3: Resolve with GitHub Desktop
+
+1. Open **GitHub Desktop** and select your repository.
+
+2. Click **Fetch origin**.
+
+3. Click **Pull origin**.
+
+4. If conflicts appear, GitHub Desktop will warn you and list the conflicted files.
+
+5. Click **Open in Visual Studio Code** (or your preferred editor).
+
+6. Edit each conflicted file:
+   - Remove the conflict markers.
+   - Keep the correct code.
+   - Save the file.
+
+7. Return to GitHub Desktop.
+
+8. If the file is not automatically marked as resolved, right-click it and choose **Mark as resolved**.
+
+9. Enter a commit message, for example:
+   ```text
+   Resolve merge conflict in ReceiptFunctions.cs
+   ```
+
+10. Click **Commit merge**.
+
+11. Click **Push origin**.
+
+12. Run the app and your Postman tests again to confirm everything still works.
+
+---
+
+### After resolving a conflict
+
+- Always run the project locally.
+- Run your Postman collection to check all endpoints.
+- Check that no conflict markers remain:
+  ```bash
+  git grep "<<<<<<<"
+  ```
+- If you get stuck, you can abort the merge and ask for help:
+  ```bash
+  git merge --abort
+  ```
+- Never force push over someone else's work unless the team agrees.
+
+---
+
+### How to avoid merge conflicts
+
+- Pull from the main branch often.
+- Commit small changes frequently.
+- Work on separate files or sections where possible.
+- Communicate with your team before editing shared files.
+- Merge pull requests regularly instead of letting branches get too far behind.
