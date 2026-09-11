@@ -4,8 +4,8 @@
 
 - A working trigger functions app with Blob and Azure table storage running of the azurite emulator.
 - Validated endpoints
-- An extensive postman collection covering all tests with an exported postman collections.json on GitHub.
-- A Docker Image and container that work of your exposed port
+- An extensive postman collection covering all tests with an exported postman collection.json on GitHub (create requests in named folders, keep it neat and when you are done right click and export. Click the + to add requests).
+- A Docker Image and container that works of the port you exposed it to in your Dockerfile
 - A docker file (right click on the function app and look for container support)
 - A tagged and pushed docker image for your backend logic.
 - A video (5 to 15 minutes long)
