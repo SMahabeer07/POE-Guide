@@ -23,8 +23,7 @@
 <img width="1917" height="1020" alt="image" src="https://github.com/user-attachments/assets/3a51be62-0527-4c45-9e02-95572b1d3934" /> 
 
 For connection strings in code:
-<img width="1100" height="167" alt="image" src="https://github.com/user-attachments/assets/7c5d175b-13e9-404f-9e66-f085f0fe21a8" />
-
+<img width="1120" height="276" alt="image" src="https://github.com/user-attachments/assets/2dabfacd-e01a-42bc-b563-06dbbc026cf7" />
 
 
 
