@@ -1,6 +1,6 @@
 # POE-Guide
 
-**IMPORTANT NOTE: NO NORE FILE SHARES FOR PART 1**
+**IMPORTANT NOTE: NO NORE FILE SHARES FOR PART 1. WE HAVE NOVED TO AZURITE BLOB. USE THE BUDGET APP TUTORIAL FROM TEAMS**
 
 For part 1 of the CLDV6212 POE we are looking at Azure Table Storage and Azure File Storage. Please note that you need to have a group of between 2 to 4 for this POE.
 
