@@ -1,4 +1,7 @@
 # POE-Guide
+
+**IMPORTANT NOTE: NO NORE FILE SHARES FOR PART 1**
+
 For part 1 of the CLDV6212 POE we are looking at Azure Table Storage and Azure File Storage. Please note that you need to have a group of between 2 to 4 for this POE.
 
 Group leaders can complete this form on their groups behalf: [CLDV6212 POE Groups](https://forms.cloud.microsoft/r/3TjeYvrGPx)
